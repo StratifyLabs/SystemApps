@@ -16,9 +16,9 @@ void Application::run() {
       TileView::Create(top_tile_view).configure([](TileView &obj, void *) {
         obj.add_tile(
                TileView::Location().set_column(0).set_row(0).set_direction(
-                   Direction::right | Direction::bottom),
+                   Direction::right),
                [](Container &obj) {
-                 obj.add<Folder>(Folder::Create("folder").set_path("/").configure(Folder::configure));
+                 obj.add<Folder>(Folder::Create("folder").set_path("/dev").configure(Folder::configure));
                })
             .add_tile(
                 TileView::Location().set_column(0).set_row(1).set_direction(
@@ -26,13 +26,6 @@ void Application::run() {
                 [](Container &obj) {
                   obj.add<Label>(Label::Create("label").configure(
                       [](Label &obj, void *) { obj.set_text("0,1"); }));
-                })
-            .add_tile(
-                TileView::Location().set_column(1).set_row(0).set_direction(
-                    Direction::top),
-                [](Container &obj) {
-                  obj.add<Label>(Label::Create("label").configure(
-                      [](Label &obj, void *) { obj.set_text("1,0"); }));
                 });
       }));
 

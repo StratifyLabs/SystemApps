@@ -13,7 +13,7 @@ include(StratifyOS_crt)
 include(LvglAPI)
 include(SosAPI)
 
-set(RAM_SIZE 65536)
+set(RAM_SIZE 131072)
 project(FileBrowser CXX C)
 
 sos_sdk_app_target(RELEASE ${PROJECT_NAME} "" release ${SOS_ARCH})
