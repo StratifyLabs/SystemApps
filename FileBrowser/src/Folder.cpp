@@ -2,57 +2,50 @@
 #include <lvgl.hpp>
 
 #include "Folder.hpp"
+#include "SystemStyles.hpp"
+#include "Model.hpp"
 
-Folder::Folder(Object parent, const Create &options) {
-  m_object = api()->obj_create(parent.object());
+Folder::Folder(Object parent, const Create &options) : ObjectAccess(object_type()) {
+  m_object = api()->win_create(parent.object(), 20_percent);
   set_name(options.name());
-  m_path = options.path();
+  model().path = options.path();
 }
 
-void Folder::initialize() {
-
-  set_layout(*Api::api()->layout_flex)
-      .set_flex_flow(FlexFlow::column)
-      .set_top_padding(0)
-      .set_border_width(0)
-      .set_bottom_padding(0)
-      .set_left_padding(0)
-      .set_right_padding(0)
-      .set_width(100_percent)
-      .set_height(100_percent);
-
-  printf("size of event:%d\n", sizeof(lv_event_code_t));
-  if (FileSystem().directory_exists(m_path) == false) {
     send_alert(get_parent());
+void Folder::configure() {
+  if (FileSystem().directory_exists(model().path) == false) {
+    model().error = "path not found: " | model().path.string_view();
     return;
   }
 
-  add<Label>(Label::Create("FolderTitle")
-                 .configure(this, [](Label &label, void *context) {
-                   Folder *self = reinterpret_cast<Folder *>(context);
+  auto * window = reinterpret_cast<Window*>(this);
 
-                   label.set_height(15_percent)
-                       .set_width(100_percent)
-                       .set_text(self->m_path.cstring());
-                 }));
+  window->add_button(model().back_button_name, LV_SYMBOL_LEFT, 15_percent)
+    .add_flag(Flags::event_bubble)
+    .add_title("title", (" " & model().path).cstring())
+    .set_width(100_percent)
+    .set_height(100_percent)
+    .add<lv::List>(
+      lv::List::Create(model().entry_list_name).configure(configure_list));
 
-  add<lv::List>(lv::List::Create("folderList")
-                    .configure(this, [](lv::List &list, void *context) {
-                      // load the path
-                      Folder *self = reinterpret_cast<Folder *>(context);
-                      const auto file_list =
-                          FileSystem().read_directory(self->m_path);
+  window->get_header().add_flag(Flags::event_bubble);
+  window->get_content().add_flag(Flags::event_bubble);
+}
 
-                      list.set_top_padding(0)
-                          .set_border_width(0)
-                          .set_bottom_padding(0)
-                          .set_width(100_percent)
-                          .set_height(80_percent);
+void Folder::configure_list(lv::List &list) {
+  // load the path
+  const auto file_list = FileSystem().read_directory(model().path);
 
-                      // add items in the director to the list
-                      for (const auto &item : file_list) {
-                        printf("adding %s\n", item.cstring());
-                        list.add_button("", item.cstring());
-                      }
-                    }));
+  list.set_top_padding(0)
+    .set_border_width(0)
+    .set_bottom_padding(0)
+    .set_width(100_percent)
+    .set_height(list_height)
+    .add_flag(Flags::event_bubble);
+
+  // add items in the director to the list
+  for (const auto &item : file_list) {
+    printf("adding %s\n", item.cstring());
+    list.add_button("", item.cstring());
+  }
 }

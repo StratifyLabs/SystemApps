@@ -47,9 +47,8 @@ int main(int argc, char *argv[]) {
 
 
   Sos().request(LVGL_REQUEST_START);
+
+
   Application().run();
-
-
-
   return 0;
 }
