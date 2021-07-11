@@ -4,8 +4,6 @@ set(SOURCES
 	main.cpp
 	Model.cpp
 	Model.hpp
-	Folder.cpp
-	Folder.hpp
 	SystemStyles.cpp
 	SystemStyles.hpp
 	Application.cpp

@@ -6,7 +6,7 @@
 #include "SystemStyles.hpp"
 #include "Model.hpp"
 
-using namespace lv;
+using namespace lvgl;
 
 class Application : public ModelAccess {
 public:
@@ -21,7 +21,8 @@ private:
   SystemStyles m_system_styles;
   Model m_model;
 
-  static void configure_list(lv::List & list, void * context);
+  static void configure_list(lvgl::List & list);
+  static void add_details(Container & container);
 
   static void go_forward(const var::StringView selected);
   static void go_backward();

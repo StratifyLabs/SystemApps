@@ -11,7 +11,6 @@ Folder::Folder(Object parent, const Create &options) : ObjectAccess(object_type(
   model().path = options.path();
 }
 
-    send_alert(get_parent());
 void Folder::configure() {
   if (FileSystem().directory_exists(model().path) == false) {
     model().error = "path not found: " | model().path.string_view();

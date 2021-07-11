@@ -6,7 +6,7 @@
 
 #include "Model.hpp"
 
-using namespace lv;
+using namespace lvgl;
 
 class Folder : public lv::ObjectAccess<Folder>, public ModelAccess {
 public:
