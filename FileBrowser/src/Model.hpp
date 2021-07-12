@@ -3,6 +3,7 @@
 
 #include <var/Array.hpp>
 #include <var/StackString.hpp>
+#include <fs/File.hpp>
 
 struct Model {
 public:
@@ -17,19 +18,17 @@ public:
   static constexpr auto tile_view_name = "TileView";
   static constexpr auto file_browser_window = "FileBrowser";
   static constexpr auto window_title_name = "WindowTitle";
+  static constexpr auto file_details_table_name = "FileDetails";
 
   var::GeneralString error;
   var::PathString path;
   FolderStatus folder_status = FolderStatus::ready;
   u32 tile_column = 0;
+  fs::FileInfo file_info;
+  var::IdString file_type;
 
 private:
   static Model *m_model;
-};
-
-class ModelAccess {
-public:
-  static Model &model() { return Model::model(); }
 };
 
 #endif // MODEL_HPP

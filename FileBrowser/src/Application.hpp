@@ -8,11 +8,10 @@
 
 using namespace lvgl;
 
-class Application : public ModelAccess {
+class Application {
 public:
-  Application();
 
-  void run();
+  void loop(Runtime & rt);
 
 private:
   static constexpr auto title_height = 15_percent;
@@ -20,6 +19,8 @@ private:
 
   SystemStyles m_system_styles;
   Model m_model;
+
+  static Model &model() { return Model::model(); }
 
   static void configure_list(lvgl::List & list);
   static void add_details(Container & container);

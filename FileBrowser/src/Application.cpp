@@ -3,12 +3,8 @@
 
 #include "Application.hpp"
 
-Application::Application() {}
-
-void Application::run() {
-
-  Runtime rt;
-  rt.set_period(10_milliseconds).initialize();
+void Application::loop(Runtime &rt) {
+  rt.set_period(10_milliseconds);
 
   model().path = "/";
 
@@ -16,10 +12,11 @@ void Application::run() {
     Window::Create(model().file_browser_window)
       .set_height(20_percent)
       .configure([](Window &window) {
-        window.add_button(model().back_button_name, LV_SYMBOL_LEFT, 15_percent)
-          .add_title(model().window_title_name, model().path, [](Label & label){
-            label.set_left_padding(10);
-          })
+        window.clear_flag(Window::Flags::scrollable)
+          .add_button(model().back_button_name, LV_SYMBOL_LEFT, 15_percent)
+          .add_title(
+            model().window_title_name, model().path,
+            [](Label &label) { label.set_left_padding(10); })
           .set_width(100_percent)
           .set_height(100_percent)
           .add_event_callback(
@@ -31,48 +28,94 @@ void Application::run() {
                 go_backward();
               }
             })
-          .add<TileView>(TileView::Create(model().tile_view_name)
-                           .configure([](TileView &tile_view) {
-                             tile_view.set_width(100_percent)
-                               .set_height(100_percent)
-                               .add_tile(
-                                 "DynamicTile", TileView::Location().set_column(0),
-                                 [](Container &container) {
-                                   printf(
-                                     "adding first tile %s:%p\n", model().path.cstring(),
-                                     container.object());
-                                   container.add<List>(
-                                     List::Create(model().entry_list_name | model().path)
-                                       .configure(configure_list));
-                                 })
-                               .add_event_callback(
-                                 EventCode::all, [](lv_event_t *lv_event) {
-                                   const Event event(lv_event);
-                                   // printf("TileViewEvent %s\n",
-                                   // Event::to_cstring(event.code()));
-                                 });
-                           }));
+          .add<TileView>(
+            TileView::Create(model().tile_view_name).configure([](TileView &tile_view) {
+              tile_view.set_width(100_percent)
+                .set_height(100_percent)
+                .add_tile(
+                  "DynamicTile", TileView::Location().set_column(0),
+                  [](Container &container) {
+                    printf(
+                      "adding first tile %s:%p\n", model().path.cstring(),
+                      container.object());
+                    container.add<List>(
+                      List::Create(model().entry_list_name | model().path)
+                        .configure(configure_list));
+                  })
+                .add_event_callback(EventCode::all, [](lv_event_t *lv_event) {
+                  const Event event(lv_event);
+                  // printf("TileViewEvent %s\n",
+                  // Event::to_cstring(event.code()));
+                });
+            }));
       }));
-
 
   rt.loop();
 }
 
 void Application::add_details(Container &container) {
 
-  container.add<Label>(Label::Create(nullptr).configure([](Label & label){
-    label.set_text("File Details for " | model().path);
-  }));
+  model().file_info = FileSystem().get_info(model().path);
 
+  const auto &info = model().file_info;
+  if (info.is_file()) {
+    model().file_type = "File";
+  } else if (info.is_device()) {
+    model().file_type = "Device";
+  }
+
+  container.add<Table>(
+    Table::Create(model().file_details_table_name).configure([](Table &table) {
+      table.set_width(100_percent)
+        .set_height(100_percent)
+        .set_column_count(2)
+        .set_row_count(4)
+        .set_column_width(0, 480 / 2)
+        .set_column_width(1, 480 / 2)
+        .set_cell_value(Table::Cell().set_column(0).set_row(0), "Type")
+        .set_cell_value(Table::Cell().set_column(0).set_row(1), "Size")
+        .set_cell_value(Table::Cell().set_column(0).set_row(2), "Mode")
+        .set_cell_value(Table::Cell().set_column(0).set_row(3), "Owner")
+        .set_cell_value(Table::Cell().set_column(1).set_row(0), model().file_type)
+        .set_cell_value(
+          Table::Cell().set_column(1).set_row(1),
+          var::NumberString(model().file_info.size()))
+        .set_cell_value(
+          Table::Cell().set_column(1).set_row(2),
+          var::NumberString(model().file_info.permissions().permissions(), "0%o"))
+        .set_cell_value(
+          Table::Cell().set_column(1).set_row(3),
+          model().file_info.owner() ? "user" : "root")
+        .add_event_callback(EventCode::draw_part_begin, [](lv_event_t *e) {
+          const Event event(e);
+          Draw draw(event.parameter<lv_obj_draw_part_dsc_t *>());
+
+          /*If the cells are drawn...*/
+          if (draw.part() == LV_PART_ITEMS) {
+            uint32_t row = draw.id() / 2;
+            uint32_t col = draw.id() - row * 4;
+
+            /*MAke every 2nd row grayish*/
+            if ((row % 2) == 0) {
+              auto rect = draw.get_rectangle();
+              const auto background_color = rect.background_color();
+              const auto mix_color =
+                Color::get_palette(Palette::grey).mix(background_color, MixRatio::x10);
+              rect.set_background_color(mix_color).set_background_opacity(Opacity::cover);
+            }
+          }
+        });
+    }));
 }
 
-void Application::configure_list(List& list) {
+void Application::configure_list(List &list) {
   // load the path
   const auto file_list = FileSystem().read_directory(model().path);
 
   const auto path_prefix = model().path == "/" ? "" : model().path.string_view();
 
   list.set_top_padding(0)
+    .set_scroll_mode(ScrollBarMode::active)
     .set_border_width(0)
     .set_bottom_padding(0)
     .set_width(100_percent)

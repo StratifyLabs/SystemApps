@@ -45,10 +45,8 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-
-  Sos().request(LVGL_REQUEST_START);
-
-
-  Application().run();
+  lvgl::Runtime runtime;
+  runtime.setup();
+  Application().loop(runtime);
   return 0;
 }
