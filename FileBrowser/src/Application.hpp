@@ -8,7 +8,7 @@
 
 using namespace lvgl;
 
-class Application {
+class Application : public api::ExecutionContext {
 public:
 
   void loop(Runtime & rt);
