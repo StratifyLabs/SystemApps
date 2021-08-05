@@ -90,7 +90,7 @@ void Application::add_details(Container &container) {
           Draw draw(event.parameter<lv_obj_draw_part_dsc_t *>());
 
           /*If the cells are drawn...*/
-          if (draw.part() == LV_PART_ITEMS) {
+          if (draw.part() == Part::items) {
             uint32_t row = draw.id() / 2;
             uint32_t col = draw.id() - row * 4;
 
