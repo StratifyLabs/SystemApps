@@ -141,10 +141,13 @@ void Application::configure_list(List &list) {
   // add items in the director to the list
   for (const auto &item : file_list) {
     auto full_path = path_prefix / item;
-    const auto *symbol = FileSystem().get_info(full_path).is_directory()
-                           ? LV_SYMBOL_DIRECTORY
-                           : LV_SYMBOL_FILE;
-    list.add_button(symbol, item.cstring());
+    {
+      api::ErrorScope es;
+      const auto *symbol = FileSystem().get_info(full_path).is_directory()
+                             ? LV_SYMBOL_DIRECTORY
+                             : LV_SYMBOL_FILE;
+      list.add_button(symbol, item.cstring());
+    }
   }
 }
 
@@ -156,6 +159,11 @@ void Application::go_forward(const var::StringView selected) {
   printf("go forward to %s\n", model().path.cstring());
 
   const auto info = FileSystem().get_info(model().path);
+  if (is_error()) {
+    printf("failed to get info for %s\n", model().path.cstring());
+    printf("Message: %s\n", error().message());
+    printf("Error: %d\n", error().error_number());
+  }
   auto screen = Container::active_screen();
 
   screen.find(model().window_title_name).cast<Label>()->set_text(model().path);
