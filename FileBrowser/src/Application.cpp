@@ -4,16 +4,16 @@
 #include "Application.hpp"
 
 void Application::loop(Runtime &rt) {
-  rt.set_period(10_milliseconds);
+  rt.set_period(50_milliseconds);
 
   model().path = "/";
 
   Container::active_screen().add<Window>(
-    Window::Create(model().file_browser_window)
+    lvgl::Window::Create(model().file_browser_window)
       .set_height(20_percent)
       .configure([](Window &window) {
         window.clear_flag(Window::Flags::scrollable)
-          .add_button(model().back_button_name, LV_SYMBOL_LEFT, 15_percent)
+          .add_button(model().back_button_name, LV_SYMBOL_LEFT, 20_percent)
           .add_title(
             model().window_title_name, model().path,
             [](Label &label) { label.set_left_padding(10); })
@@ -50,6 +50,11 @@ void Application::loop(Runtime &rt) {
             }));
       }));
 
+  printf(
+    "tileview scroll x is %d\n",
+    Container::active_screen().find(model().tile_view_name).cast<TileView>()->get_scroll_x());
+
+
   rt.loop();
 }
 
@@ -66,12 +71,13 @@ void Application::add_details(Container &container) {
 
   container.add<Table>(
     Table::Create(model().file_details_table_name).configure([](Table &table) {
+      const auto width = Container::active_screen().get_width();
       table.set_width(100_percent)
         .set_height(100_percent)
         .set_column_count(2)
         .set_row_count(4)
-        .set_column_width(0, 480 / 2)
-        .set_column_width(1, 480 / 2)
+        .set_column_width(0, width / 2)
+        .set_column_width(1, width / 2)
         .set_cell_value(Table::Cell().set_column(0).set_row(0), "Type")
         .set_cell_value(Table::Cell().set_column(0).set_row(1), "Size")
         .set_cell_value(Table::Cell().set_column(0).set_row(2), "Mode")
@@ -91,9 +97,8 @@ void Application::add_details(Container &container) {
           Draw draw(event.parameter<lv_obj_draw_part_dsc_t *>());
 
           /*If the cells are drawn...*/
-          if (draw.part() == LV_PART_ITEMS) {
+          if (draw.part() == Part::items) {
             uint32_t row = draw.id() / 2;
-            uint32_t col = draw.id() - row * 4;
 
             /*MAke every 2nd row grayish*/
             if ((row % 2) == 0) {
@@ -178,6 +183,8 @@ void Application::go_forward(const var::StringView selected) {
 }
 
 void Application::go_backward() {
+
+  printf("Go backward %d\n", model().tile_column);
 
   if (model().tile_column == 0) {
     return;

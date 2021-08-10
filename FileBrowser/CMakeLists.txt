@@ -9,11 +9,7 @@ set(CMAKE_MODULE_PATH ${SOS_SDK_PATH}/cmake)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
-include(StratifyOS_crt)
-include(LvglAPI)
-include(SosAPI)
-
-set(RAM_SIZE 131072)
+set(RAM_SIZE 98304)
 project(FileBrowser CXX C)
 
 sos_sdk_app_target(RELEASE ${PROJECT_NAME} "" release ${SOS_ARCH})
