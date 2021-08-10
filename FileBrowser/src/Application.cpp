@@ -50,11 +50,6 @@ void Application::loop(Runtime &rt) {
             }));
       }));
 
-  printf(
-    "tileview scroll x is %d\n",
-    Container::active_screen().find(model().tile_view_name).cast<TileView>()->get_scroll_x());
-
-
   rt.loop();
 }
 
