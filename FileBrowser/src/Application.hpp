@@ -1,6 +1,8 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
+#include <sys/Cli.hpp>
+
 #include <lvgl.hpp>
 
 #include "SystemStyles.hpp"
@@ -11,7 +13,7 @@ using namespace lvgl;
 class Application : public api::ExecutionContext {
 public:
 
-  void loop(Runtime & rt);
+  Application(const sys::Cli & cli, Runtime & rt);
 
 private:
   static constexpr auto title_height = 15_percent;

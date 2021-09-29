@@ -1,15 +1,17 @@
+
 #include <fs.hpp>
 #include <lvgl.hpp>
 
 #include "Application.hpp"
 
-void Application::loop(Runtime &rt) {
+Application::Application(const sys::Cli& cli, Runtime &rt) {
   rt.set_period(50_milliseconds);
 
-  model().path = "/";
+  const auto path_argument = cli.get_option("path");
+  model().path = path_argument.is_empty() ? "/" : path_argument;
 
-  Container::active_screen().add<Window>(
-    lvgl::Window::Create(model().file_browser_window)
+  Container::active_screen().add(
+    lvgl::Window(model().file_browser_window)
       .set_height(20_percent)
       .configure([](Window &window) {
         window.clear_flag(Window::Flags::scrollable)
@@ -28,8 +30,8 @@ void Application::loop(Runtime &rt) {
                 go_backward();
               }
             })
-          .add<TileView>(
-            TileView::Create(model().tile_view_name).configure([](TileView &tile_view) {
+          .add(
+            TileView(model().tile_view_name).configure([](TileView &tile_view) {
               tile_view.set_width(100_percent)
                 .set_height(100_percent)
                 .add_tile(
@@ -38,8 +40,8 @@ void Application::loop(Runtime &rt) {
                     printf(
                       "adding first tile %s:%p\n", model().path.cstring(),
                       container.object());
-                    container.add<List>(
-                      List::Create(model().entry_list_name | model().path)
+                    container.add(
+                      List(model().entry_list_name | model().path)
                         .configure(configure_list));
                   })
                 .add_event_callback(EventCode::all, [](lv_event_t *lv_event) {
@@ -64,8 +66,8 @@ void Application::add_details(Container &container) {
     model().file_type = "Device";
   }
 
-  container.add<Table>(
-    Table::Create(model().file_details_table_name).configure([](Table &table) {
+  container.add(
+    Table(model().file_details_table_name).configure([](Table &table) {
       const auto width = Container::active_screen().get_width();
       table.set_width(100_percent)
         .set_height(100_percent)
@@ -170,7 +172,7 @@ void Application::go_forward(const var::StringView selected) {
       ->add_tile(
         "DynamicTile", TileView::Location().set_column(model().tile_column),
         [](Container &container) {
-          container.add<List>(List::Create(nullptr).configure(configure_list));
+          container.add(List("").configure(configure_list));
         })
       .update_layout()
       .set_tile(TileView::Location().set_column(model().tile_column));

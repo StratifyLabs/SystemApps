@@ -46,7 +46,6 @@ int main(int argc, char *argv[]) {
   }
 
   lvgl::Runtime runtime;
-  runtime.setup();
-  Application().loop(runtime);
+  Application(cli, runtime);
   return 0;
 }
