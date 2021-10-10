@@ -10,7 +10,7 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_MODULE_PATH}/sos-toolchain.cmake)
 include(sos-sdk)
 
 set(RAM_SIZE 98304)
-project(FileBrowser CXX C)
+project(FileSelect CXX C)
 
 sos_sdk_app_target(RELEASE ${PROJECT_NAME} "" release ${SOS_ARCH})
 sos_sdk_add_subdirectory(SOURCELIST src)

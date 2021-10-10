@@ -10,4 +10,5 @@ include(sos-sdk)
 
 project(SystemApps CXX C)
 
-add_subdirectory(FileBrowser FileBrowser)
+add_subdirectory(FileBrowse)
+add_subdirectory(FileSelect)

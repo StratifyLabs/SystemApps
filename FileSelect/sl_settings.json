@@ -1,7 +1,7 @@
 {
-"description": "FileBrowser allows you to browse the filesystem on a compatible system.",
+"description": "FileBrowse allows you to browse the filesystem on a compatible system.",
 "github": "https://github.com/StratifyLabs/SystemApps",
-"name": "FileBrowser",
+"name": "FileSelect",
 "permissions": "public",
 "publisher": "Stratify Labs, Inc",
 "type": "app",
