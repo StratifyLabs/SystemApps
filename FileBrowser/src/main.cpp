@@ -10,7 +10,6 @@
 #include <lvgl_api.h>
 
 #include "sl_config.h"
-
 #include "Application.hpp"
 
 static void print_usage();
@@ -34,7 +33,6 @@ private:
 };
 
 int main(int argc, char *argv[]) {
-
   Cli cli(argc, argv);
   const Options options(cli);
 
