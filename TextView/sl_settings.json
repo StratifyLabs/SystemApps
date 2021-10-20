@@ -1,0 +1,19 @@
+{
+"description": "TextView allows you to view text files.",
+"github": "https://github.com/StratifyLabs/SystemApps",
+"name": "TextView",
+"permissions": "public",
+"publisher": "Stratify Labs, Inc",
+"type": "app",
+"uid": "9cQyOTk3fZXOuMtPyf5j9X4H4b83",
+"version": "0.01",
+"ramSize": 0,
+"timestamp": 1622921927,
+"documentId": "",
+"hardwareId": "",
+"tagList": [
+"system-apps",
+"utility"
+],
+"team": ""
+}

@@ -12,3 +12,4 @@ project(SystemApps CXX C)
 
 add_subdirectory(FileBrowse)
 add_subdirectory(FileSelect)
+add_subdirectory(TextView)

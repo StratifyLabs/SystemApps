@@ -10,19 +10,15 @@ Application::Application(const sys::Cli &cli, Runtime &rt) {
 
   const auto path = path_argument.is_empty() ? "/" : path_argument;
 
-  static auto file_system_user_data = FileSystemWindow::FileSystemData("fileSystemWindow")
-                                        .set_base_path(path)
-                                        .set_select_file();
+  static auto file_system_user_data =
+    FileSystemWindow::Data("fileSystemWindow").set_base_path(path).set_select_file();
 
   model().runtime = &rt;
 
   screen()
-    .add(FileSystemWindow(
-           file_system_user_data,
-           FileSystemWindow::Construct().set_header_height(20_percent))
-           .configure([](FileSystemWindow &fs_window) {
-             fs_window.set_width(100_percent).set_height(100_percent);
-           }))
+    .add(FileSystemWindow(file_system_user_data, 20_percent)
+           .set_width(100_percent)
+           .set_height(100_percent))
     .add_event_callback(
 
       // confirm with a model message box before exiting

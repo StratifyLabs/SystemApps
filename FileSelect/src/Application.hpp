@@ -46,7 +46,7 @@ private:
   static constexpr auto list_height = 84_percent;
 
   static void configure_list(Container &list);
-  static void configure_details(Container &container);
+  static void configure_details(Container container);
 
   static PathString get_next_path(const char *entry) {
     if (model().path == "/") {

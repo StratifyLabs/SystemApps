@@ -10,14 +10,20 @@ Application::Application(const sys::Cli &cli, Runtime &rt) {
 
   const auto path = path_argument.is_empty() ? "/" : path_argument;
 
-  static auto file_system_user_data =
-    FileSystemWindow::Data("fileSystemWindow").set_base_path(path);
+  File file(path);
+  var::Array<u8, 2048> file_buffer;
+  static auto user_data =
+    FileTextArea::Data("fileSystemWindow", View(file_buffer)).set_file(&file);
 
+  API_PRINTF_TRACE_LINE();
   model().runtime = &rt;
 
   screen()
-    .add(FileSystemWindow(file_system_user_data, 20_percent).fill())
+    .add(FileTextArea(user_data).fill().set_text_font(Font::find("sourcecode", 20)))
     .add_event_callback(
+
+      // confirm with a model message box before exiting
+
       EventCode::exited, [](lv_event_t *) { model().runtime->set_stopped(); });
 
   rt.loop();
