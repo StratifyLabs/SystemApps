@@ -4,7 +4,6 @@
 
 #include <chrono.hpp>
 #include <sys.hpp>
-#include <sos.hpp>
 #include <var.hpp>
 
 #include <lvgl_api.h>
@@ -43,7 +42,6 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-  lvgl::Runtime runtime;
-  Application(cli, runtime);
+  Application::run(cli);
   return 0;
 }

@@ -1,29 +1,63 @@
 ﻿
-#include <fs.hpp>
-#include <lvgl.hpp>
+#if defined __link
+#include "designlab/fonts/fonts.h"
+#include "designlab/themes/themes.h"
+#endif
 
 #include "Application.hpp"
+#include "view/SelectFiles.hpp"
 
-Application::Application(const sys::Cli &cli, Runtime &rt) {
-  rt.set_period(50_milliseconds);
+void Application::run(const sys::Cli &cli) {
+  initialize(cli);
+  auto *runtime = []() {
+    Model::Scope ms;
+    auto *result = model().runtime;
+    Display(result->display()).set_theme(model().dark_theme);
+    return model().runtime;
+  }();
+
   const auto path_argument = cli.get_option("path");
-
   const auto path = path_argument.is_empty() ? "/" : path_argument;
 
-  static auto file_system_user_data =
-    FileSystemWindow::Data("fileSystemWindow").set_base_path(path).set_select_file();
+  SelectFiles::setup(screen(), path);
 
-  model().runtime = &rt;
+  runtime->loop();
+}
 
-  screen()
-    .add(FileSystemWindow(file_system_user_data, 20_percent)
-           .set_width(100_percent)
-           .set_height(100_percent))
-    .add_event_callback(
+void Application::initialize(const sys::Cli &cli) {
+#if defined __link
+  api::catch_segmentation_fault();
+  // on `link` (desktop) the application needs to provide
+  // the fonts, themes, etc
+  static lvgl::Runtime runtime(
+    "File Browse", window::Point(), window::Size(320 * 6, 240 * 6),
+    window::Window::Flags::shown | window::Window::Flags::highdpi
+    /*| window::Window::Flags::resizeable*/);
 
-      // confirm with a model message box before exiting
+  runtime.window().set_minimum_size(window::Size(480, 360));
 
-      EventCode::exited, [](lv_event_t *) { model().runtime->set_stopped(); });
+  // make the fonts available to `Font::find()`
+  fonts_initialize();
 
-  rt.loop();
+  {
+    Model::Scope model_scope;
+    model().runtime = &runtime;
+    model().light_theme =
+      Theme(lvgl_small_light_theme_initialize(runtime.display(), nullptr));
+    model().dark_theme =
+      Theme(lvgl_small_dark_theme_initialize(runtime.display(), nullptr));
+    model().is_dark_theme = false;
+  }
+#else
+  // on Stratify OS the system provides
+  // the fonts, themes, display size, etc
+  static lvgl::Runtime runtime;
+  {
+    Model::Scope model_scope;
+
+    // grab the light and dark themes for the model
+
+    model().runtime = &runtime;
+  }
+#endif
 }

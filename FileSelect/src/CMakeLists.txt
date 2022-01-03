@@ -4,4 +4,10 @@ set(SOURCES
 	main.cpp
 	Application.cpp
 	Application.hpp
+
+	model/Model.hpp
+
+  view/SelectFiles.cpp
+  view/SelectFiles.hpp
+
 	PARENT_SCOPE)
