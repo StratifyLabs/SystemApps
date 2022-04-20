@@ -54,10 +54,9 @@ void Application::initialize(const sys::Cli &cli) {
   static lvgl::Runtime runtime;
   {
     Model::Scope model_scope;
-
-    // grab the light and dark themes for the model
-
     model().runtime = &runtime;
+    model().light_theme = Theme::find("light");
+    model().dark_theme = Theme::find("dark");
   }
 #endif
 }
