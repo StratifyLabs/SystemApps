@@ -10,7 +10,7 @@
 #include <printer/YamlPrinter.hpp>
 
 #include <design/extras/Form.hpp>
-#include <design/Worker.hpp>
+#include <design/ModelScope.hpp>
 
 
 struct Model {
