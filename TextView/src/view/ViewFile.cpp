@@ -12,8 +12,10 @@
 void ViewFile::setup(lvgl::Generic generic, var::StringView path) {
   static var::Array<u8, 8192> buffer;
   static fs::File file(path);
-  static auto text_area_data =
-    FileTextArea::Data(Names::file_text_area, View(buffer)).set_file(&file);
 
-  generic.add(Container().fill().add(FileTextArea(text_area_data).set_border_width(0).fill()));
+  generic.add(Container().fill().add(
+    FileTextArea(
+      FileTextArea::Data::create(Names::file_text_area, View(buffer)).set_file(&file))
+      .set_border_width(0)
+      .fill()));
 }
